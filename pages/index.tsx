@@ -2,10 +2,46 @@ import SightWords from "./sightWords";
 import Numbers from "./numbers";
 import Colors from "./colors";
 import Alphabets from "./alphabets";
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { useDispatch } from "react-redux";
+import {
+  addSightWords,
+  addAlphabets,
+  addNumbers,
+} from "../store/features/cardsSlice";
 
 export default function Home() {
   const [category, setcategory] = useState("SIGHTWORD");
+  const dispatch = useDispatch();
+
+  async function callAPI() {
+    console.log("Inside the callAPI function");
+    const sightWords = await fetch(
+      process.env.API_BASE_URI + "cards?cardType=sightWords"
+    );
+    let res = await sightWords.json();
+    console.log(`Response : ${res[0].sightWords}`);
+    dispatch(addSightWords(res[0].sightWords));
+
+    const numbers = await fetch(
+      process.env.API_BASE_URI + "cards?cardType=numbers"
+    );
+    res = await numbers.json();
+    console.log(`Response : ${res[0].numbers}`);
+    dispatch(addNumbers(res[0].numbers));
+
+    const alphabets = await fetch(
+      process.env.API_BASE_URI + "cards?cardType=alphabets"
+    );
+    res = await alphabets.json();
+    console.log(`Response : ${res[0].alphabets}`);
+    dispatch(addAlphabets(res[0].alphabets));
+  }
+
+  useEffect(() => {
+    console.log("Inside the useEffect hook");
+    callAPI();
+  }, []);
 
   return (
     <div className="h-screen w-full bg-gray-900">
